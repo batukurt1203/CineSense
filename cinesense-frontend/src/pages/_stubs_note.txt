@@ -1,0 +1,8 @@
+// ── Stub pages – to be fully implemented ──
+// Each file exports a React component with a placeholder.
+
+export default function LoginPage()      { return <PageStub title="Sign In" /> }
+
+// RegisterPage.jsx
+import { PageStub } from './_PageStub'
+export default function RegisterPage()   { return <PageStub title="Create Account" /> }
