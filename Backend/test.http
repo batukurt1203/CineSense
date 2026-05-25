@@ -1,0 +1,20 @@
+﻿### Yeni Kullanıcı Kaydı Testi
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@cinesense.com",
+  "password": "Mypassword123!"
+}
+
+###
+
+### Kullanıcı Girişi ve Token Alma Testi
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@cinesense.com",
+  "password": "Mypassword123!"
+}

@@ -1,0 +1,12 @@
+﻿# Web Framework & Server
+fastapi==0.110.0
+uvicorn==0.27.1
+pydantic==2.6.3
+
+# Data Analysis & Machine Learning
+scikit-learn==1.4.0
+pandas==2.2.1
+numpy==1.26.4
+
+# Environment Variables
+python-dotenv==1.0.1
