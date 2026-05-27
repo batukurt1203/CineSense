@@ -7,7 +7,7 @@ using System.Text;
 using BCrypt.Net;
 using CineSense.Backend.Models;
 using CineSense.Backend.Models.DTOs;
-using CineSense.Backend.Data; // Kendi DbContext yolunu kontrol et
+using CineSense.Backend.Data; 
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,10 @@ namespace CineSense.Backend.Controllers
                 Username = request.Username,
                 Email = request.Email,
                 // Şifreyi BCrypt ile geri döndürülemez şekilde (Hash) şifreliyoruz
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password) 
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                
+                // YENİ EKLENEN SATIR: Gelen rolü ekle, boşsa varsayılan olarak "User" ata
+                Role = string.IsNullOrWhiteSpace(request.Role) ? "User" : request.Role
             };
 
             _context.Users.Add(user);
@@ -75,23 +78,21 @@ namespace CineSense.Backend.Controllers
         // Güvenli JWT (Bilet) Üretme Metodu
         private string CreateToken(User user)
         {
-            // appsettings.json'dan gizli anahtarımızı alacağız
             var tokenKey = _configuration.GetSection("AppSettings:Token").Value;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
             
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            // Biletin içine gömeceğimiz kullanıcı bilgileri
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)    
+                new Claim(ClaimTypes.Role, user.Role ?? "User") // Rol null ise patlamaması için ufak bir güvenlik ağı    
             };
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1), // Bilet 1 gün sonra geçersiz olacak
+                expires: DateTime.Now.AddDays(1), 
                 signingCredentials: creds
             );
 

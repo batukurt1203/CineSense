@@ -1,47 +1,145 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const MovieCard = ({ movie }) => {
+    // Redux'tan kullanıcı token'ını alıyoruz
+    const { token } = useSelector((state) => state.auth);
+
+    // Aksiyonlar için yerel state'ler
+    const [inWatchlist, setInWatchlist] = useState(false);
+    const [rating, setRating] = useState(0);
+
+// 1. İzleme Listesine Ekle/Çıkar Fonksiyonu
+    const handleToggleWatchlist = async () => {
+        if (!token) {
+            alert("Bu işlem için giriş yapmalısınız.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/userprofile/watchlist/${movie.id}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                setInWatchlist(!inWatchlist);
+                alert(inWatchlist ? "Film listeden çıkarıldı." : "Film listeye eklendi!"); // Başarı mesajı
+            } else {
+                // Eğer 401 (Yetkisiz) veya 500 (Sunucu) hatası dönerse ekrana bas
+                const errorText = await response.text();
+                alert(`İşlem başarısız! Sunucu Cevabı: ${response.status} - ${errorText}`);
+            }
+        } catch (err) {
+            alert(`Ağ/Bağlantı Hatası: ${err.message}`);
+        }
+    };
+
+    // 2. Filme Puan Verme Fonksiyonu
+    const handleRate = async (score) => {
+        if (!token) {
+            alert("Bu işlem için giriş yapmalısınız.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/userprofile/rate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ movieId: movie.id, score: score })
+            });
+
+            if (response.ok) {
+                setRating(score);
+                alert(`Filme ${score} puan verdiniz!`);
+            } else {
+                const errorText = await response.text();
+                alert(`Puanlama başarısız! Sunucu Cevabı: ${response.status} - ${errorText}`);
+            }
+        } catch (err) {
+            alert(`Ağ/Bağlantı Hatası: ${err.message}`);
+        }
+    };
+
     return (
-        <div style={{
-            border: '1px solid #e0e0e0',
-            borderRadius: '16px',
-            padding: '30px',
-            textAlign: 'center',
-            backgroundColor: '#ffffff',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s',
-            maxWidth: '600px',
-            margin: '20px auto' // Kartların alt alta düzgün dizilmesi için margin ayarladık
-        }}>
-            {/* Film İsmi */}
-            <h2 style={{ color: '#2c3e50', fontSize: '28px', margin: '0 0 10px 0' }}>
-                {movie.title}
-            </h2>
+        <div style={styles.card}>
+            <h3>{movie.title}</h3>
+            <p style={styles.genres}>{movie.genres}</p>
+            <p style={styles.overview}>{movie.overview?.substring(0, 100)}...</p>
 
-            {/* Film Türleri */}
-            <p style={{ fontWeight: 'bold', color: '#8e44ad', fontSize: '14px', marginBottom: '15px' }}>
-                {movie.genres}
-            </p>
+            {/* ETKİLEŞİM BUTONLARI */}
+            <div style={styles.actions}>
 
-            {/* API'den gelen film özeti (overview) */}
-            <p style={{ fontStyle: 'italic', color: '#34495e', fontSize: '15px', lineHeight: '1.6', textAlign: 'justify' }}>
-                {movie.overview}
-            </p>
+                {/* İzleme Listesi Butonu */}
+                <button
+                    onClick={handleToggleWatchlist}
+                    style={{...styles.watchlistBtn, backgroundColor: inWatchlist ? '#dc3545' : '#28a745'}}
+                >
+                    {inWatchlist ? '➖ Listeden Çıkar' : '➕ Listeye Ekle'}
+                </button>
 
-            {/* TMDB ID'si */}
-            <span style={{
-                display: 'inline-block',
-                marginTop: '15px',
-                padding: '5px 10px',
-                backgroundColor: '#f1f2f6',
-                color: '#a4b0be',
-                borderRadius: '8px',
-                fontSize: '12px'
-            }}>
-                TMDB ID: {movie.id}
-            </span>
+                {/* Yıldızlı Puanlama Alanı */}
+                <div style={styles.ratingSection}>
+                    <span style={{ fontSize: '14px', marginRight: '5px' }}>Puanla:</span>
+                    {[1, 2, 3, 4, 5].map(num => (
+                        <span
+                            key={num}
+                            onClick={() => handleRate(num)}
+                            style={{
+                                cursor: 'pointer',
+                                color: num <= rating ? '#f39c12' : '#e0e0e0',
+                                fontSize: '24px'
+                            }}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
+
+            </div>
         </div>
     );
+};
+
+const styles = {
+    card: {
+        padding: '20px',
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+    },
+    genres: {
+        fontSize: '12px',
+        color: '#6c757d',
+        fontStyle: 'italic'
+    },
+    overview: {
+        fontSize: '14px',
+        marginBottom: '15px'
+    },
+    actions: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderTop: '1px solid #eee',
+        paddingTop: '15px'
+    },
+    watchlistBtn: {
+        color: '#fff',
+        border: 'none',
+        padding: '8px 12px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontWeight: 'bold'
+    },
+    ratingSection: {
+        display: 'flex',
+        alignItems: 'center'
+    }
 };
 
 export default MovieCard;

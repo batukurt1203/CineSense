@@ -19,5 +19,9 @@ namespace CineSense.Backend.Models
         // Türleri veritabanında basitçe virgülle ayrılmış metin olarak tutabiliriz (Örn: "Aksiyon, Bilim Kurgu")
         [Required]
         public string Genres { get; set; }
+        
+        public string ReleaseDate { get; set; } = "Bilinmiyor";
+        
+        public double VoteAverage { get; set; } = 0.0;
     }
 }

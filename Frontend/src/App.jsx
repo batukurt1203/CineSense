@@ -2,13 +2,14 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from './redux/slices/authSlice';
-
 import Home from './pages/Home';
 import Matchmaker from './pages/Matchmaker';
 import WatchParty from './pages/WatchParty';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AdminDashboard from './pages/AdminDashboard'; // Admin sayfasını ekledik
+import AdminDashboard from './pages/AdminDashboard';
+import UserProfile from './pages/UserProfile';
+import SearchMovies from './pages/SearchMovies';
 
 function App() {
     // Redux'tan user (kullanıcı adı) ve role (Admin/User) bilgilerini çekiyoruz
@@ -33,7 +34,13 @@ function App() {
                         <Link to="/" style={styles.navLink}>Ana Sayfa</Link>
                         <Link to="/matchmaker" style={styles.navLink}>Bireysel Eşleştirici</Link>
                         <Link to="/watch-party" style={styles.navLinkParty}>🍿 Watch Party</Link>
-
+                        <Link
+                            to="/profile"
+                            style={{ color: '#fff', textDecoration: 'none', marginRight: '20px', fontWeight: 'bold' }}
+                        >
+                            👤 Profilim
+                        </Link>
+                        <Link to="/search" style={{ color: '#fff', textDecoration: 'none', marginRight: '20px', fontWeight: 'bold' }}>🔍 Film Ara</Link>
                         {/* KULLANICI GİRİŞ YAPTIYSA TEK BİR DİV İÇİNDE GÖSTERİLİR */}
                         {user ? (
                             <div style={styles.userMenu}>
@@ -42,6 +49,7 @@ function App() {
                                     <Link to="/admin" style={{ color: '#ffc107', fontWeight: 'bold', marginRight: '15px', textDecoration: 'none' }}>
                                         ⚙️ Yönetim Paneli
                                     </Link>
+                                    
                                 )}
                                 <span style={styles.welcomeText}>Hoş geldin, <b>{user}</b></span>
                                 <button onClick={handleLogout} style={styles.logoutButton}>Çıkış Yap</button>
@@ -63,7 +71,9 @@ function App() {
                         <Route path="/watch-party" element={<WatchParty />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
-                        <Route path="/admin" element={<AdminDashboard />} /> {/* Admin rotasını ekledik */}
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/profile" element={<UserProfile />} />
+                        <Route path="/search" element={<SearchMovies />} />
                     </Routes>
                 </main>
 

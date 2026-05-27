@@ -4,71 +4,79 @@ import { registerUser } from '../redux/slices/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const dispatch = useDispatch();
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        role: 'User' // YENİ: Başlangıç state'i olarak User
+    });
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { status, error } = useSelector((state) => state.auth);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Redux action'ını çalıştır ve sonucunu bekle
-        const resultAction = await dispatch(registerUser({ username, email, password }));
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData) // formData içinde artık role bilgisi de var
+            });
 
-        // Eğer kayıt başarılıysa giriş sayfasına yönlendir
-        if (registerUser.fulfilled.match(resultAction)) {
-            navigate('/login');
+            if (response.ok) {
+                alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+                navigate('/login');
+            } else {
+                const errorData = await response.text();
+                setError(`Kayıt başarısız: ${errorData}`);
+            }
+        } catch (err) {
+            setError(`Bağlantı hatası: ${err.message}`);
         }
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Aramıza Katıl</h2>
+        <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+            <h2>Kayıt Ol</h2>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <input
-                        type="text"
-                        placeholder="Kullanıcı Adı"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                    <input
-                        type="email"
-                        placeholder="E-posta Adresi"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Şifre"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={styles.input}
-                        required
-                    />
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <input
+                    type="text" name="username" placeholder="Kullanıcı Adı"
+                    value={formData.username} onChange={handleChange} required
+                    style={{ padding: '10px' }}
+                />
 
-                    <button
-                        type="submit"
-                        disabled={status === 'loading'}
-                        style={{...styles.button, opacity: status === 'loading' ? 0.7 : 1}}
-                    >
-                        {status === 'loading' ? 'Kaydediliyor...' : 'Kayıt Ol'}
-                    </button>
-                </form>
+                <input
+                    type="email" name="email" placeholder="E-Posta"
+                    value={formData.email} onChange={handleChange} required
+                    style={{ padding: '10px' }}
+                />
 
-                {status === 'failed' && <p style={styles.errorText}>Hata: {error}</p>}
+                <input
+                    type="password" name="password" placeholder="Şifre"
+                    value={formData.password} onChange={handleChange} required
+                    style={{ padding: '10px' }}
+                />
 
-                <p style={styles.footerText}>
-                    Zaten hesabın var mı? <Link to="/login" style={styles.link}>Giriş Yap</Link>
-                </p>
-            </div>
+                {/* YENİ: ROL SEÇİM ALANI */}
+                <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    style={{ padding: '10px' }}
+                >
+                    <option value="User">Standart Kullanıcı (User)</option>
+                    <option value="Admin">Sistem Yöneticisi (Admin)</option>
+                </select>
+
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#007BFF', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                    Kayıt Ol
+                </button>
+            </form>
         </div>
     );
 };

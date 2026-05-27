@@ -68,14 +68,11 @@ namespace CineSense.Backend.Controllers
                                 {
                                     Id = tmdbData.Id,
                                     Title = tmdbData.Title ?? "Bilinmeyen Film",
-                                    // ÇÖZÜM: TMDB'den özet boş gelirse DB çökmesin diye varsayılan bir metin atıyoruz
-                                    Overview = string.IsNullOrWhiteSpace(tmdbData.Overview) 
-                                        ? "Bu film için Türkçe özet bulunmamaktadır." 
-                                        : tmdbData.Overview,
-                                    // ÇÖZÜM: Türler boş gelirse hata vermesini engelliyoruz
-                                    Genres = tmdbData.Genres != null && tmdbData.Genres.Any() 
-                                        ? string.Join(", ", tmdbData.Genres.Select(g => g.Name)) 
-                                        : "Bilinmiyor"
+                                    Overview = string.IsNullOrWhiteSpace(tmdbData.Overview) ? "Bu film için Türkçe özet bulunmamaktadır." : tmdbData.Overview,
+                                    Genres = tmdbData.Genres != null && tmdbData.Genres.Any() ? string.Join(", ", tmdbData.Genres.Select(g => g.Name)) : "Bilinmiyor",
+                                    
+                                    ReleaseDate = string.IsNullOrWhiteSpace(tmdbData.ReleaseDate) ? "Bilinmiyor" : tmdbData.ReleaseDate,
+                                    VoteAverage = tmdbData.VoteAverage
                                 };
 
                                 await _movieRepository.AddAsync(newMovie); 

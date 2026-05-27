@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CineSense.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c4dab58636b65afac5f94a563011442c30ed7c3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9ed73208bbccb38eaed6bb0fa45c47634c71eaad")]
 [assembly: System.Reflection.AssemblyProductAttribute("CineSense.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CineSense.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
