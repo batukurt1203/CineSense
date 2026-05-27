@@ -34,9 +34,22 @@ class ContentBasedFiltering(BaseRecommendationStrategy):
 
         similarity_scores = cosine_similarity(user_vector, candidate_vectors).flatten()
 
-        # 5. En Yüksek Skoru Alan Filmi Bul
-        # 5. En Yüksek Skoru Alan Filmi Bul
-        best_match_index = similarity_scores.argmax()
+        # 5. En Yüksek Skoru Alan İlk 3 Filmi Bul
+        top_indices = similarity_scores.argsort()[-3:][::-1]
+
+        recommended_movies = []
+        for idx in top_indices:
+            movie = candidates[idx]
+            recommended_movies.append({
+                "recommendedMovieId": movie.get('id'),
+                "recommendedMovieTitle": movie.get('title', 'Bilinmeyen Film'),
+                "matchScore": round(float(similarity_scores[idx] * 100), 2)
+            })
+
+        return {
+            "recommendations": recommended_movies,
+            "message": "Algoritma başarıyla çalıştı."
+        }
 
         # En iyi eşleşen filmin tüm verisine ulaşıyoruz
         best_movie = candidates[best_match_index]
