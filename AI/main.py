@@ -76,7 +76,7 @@ def get_recommendation(data: RecommendationRequest):
         mood=data.userProfile.currentMood
     )
 
-    print(f"[SONUÇ] Önerilen Film: {result.get('recommendedMovieTitle')} (ID: {result.get('recommendedMovieId')})")
+    print(f"[SONUÇ] {result.get('message')}")
     print("="*40)
 
     return result

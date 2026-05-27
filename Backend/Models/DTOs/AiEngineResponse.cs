@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization; // BU SATIRI EKLEMEYİ UNUTMA
 
 namespace CineSense.Backend.Models.DTOs
 {
     public class AiEngineResponse
     {
-        // Python'dan "recommended_movie_ids" olarak gelecek JSON verisini 
-        // C# standartlarına uygun isimlendirmeyle (PascalCase) eşleştiriyoruz.
-        [JsonPropertyName("recommendedMovieId")]
-        public int RecommendedMovieId { get; set; }
-        
-        [JsonPropertyName("recommendedMovieTitle")]
-        public string RecommendedMovieTitle { get; set; }
-        
+        // JSON içindeki "recommendedMovieIds" etiketini doğrudan bu listeye bağla
+        [JsonPropertyName("recommendedMovieIds")]
+        public List<int> RecommendedMovieIds { get; set; } 
+
+        // JSON içindeki "message" etiketini doğrudan bu değişkene bağla
         [JsonPropertyName("message")]
         public string Message { get; set; }
     }

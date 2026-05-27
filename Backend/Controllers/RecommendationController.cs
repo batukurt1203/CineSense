@@ -90,17 +90,17 @@ namespace CineSense.Backend.Controllers
                     }
                 }
                 // 4. Yapay zeka motoruna verileri ve kullanıcı profilini iletiyoruz
-                // Yapay zeka motoruna verileri ve kullanıcı profilini iletiyoruz
                 var aiResponse = await _aiEngineService.GetRecommendationAsync(request.FavoriteMovieIds, request.UserProfile);
 
-// ARTIK LİSTE DEĞİL, TEKİL ID KONTROLÜ YAPILIYOR
-                if (aiResponse == null || aiResponse.RecommendedMovieId == 0)
+                // YENİ: Artık liste boş mu diye kontrol ediyoruz
+                if (aiResponse == null || aiResponse.RecommendedMovieIds == null || !aiResponse.RecommendedMovieIds.Any())
                 {
                     return Ok(await _movieRepository.GetPopularMoviesAsync());
                 }
 
-// Repository bir liste beklediği için tekil ID'yi bir listenin içine sarmallayarak gönderiyoruz
-                var recommendedMovies = await _movieRepository.GetMoviesByIdsAsync(new List<int> { aiResponse.RecommendedMovieId });
+                // YENİ: Zaten elimizde bir ID listesi olduğu için "new List<int>" sarmalamasına gerek kalmadı, doğrudan veriyoruz
+                var recommendedMovies = await _movieRepository.GetMoviesByIdsAsync(aiResponse.RecommendedMovieIds);
+                
                 return Ok(recommendedMovies);
             }
             catch (System.Exception ex)
@@ -115,10 +115,4 @@ namespace CineSense.Backend.Controllers
             return Ok("C# ve React başarıyla konuşuyor!");
         }
     }
-}
-
-// TMDB'den dönen JSON verisini karşılamak için gerekli DTO'lar
-namespace CineSense.Backend.Models.DTOs
-{
- 
 }
