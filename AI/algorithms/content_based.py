@@ -16,7 +16,7 @@ class ContentBasedFiltering(BaseRecommendationStrategy):
 
         # 2. Aday Filmlerin Verilerini Hazırla
         candidate_ids = [c['id'] for c in candidates]
-        candidate_texts = [f"{c.get('overview', '')} {' '.join(c.get('genres', []))}" for c in candidates]
+        candidate_texts = [f"{c.get('overview', '')} {' '.join(c.get('genres', []))*5}" for c in candidates]
 
         # 3. TF-IDF Vektörizasyon İşlemi
         all_texts = [user_profile_text] + candidate_texts
